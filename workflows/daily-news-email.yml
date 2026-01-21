@@ -1,38 +1,22 @@
-name: Daily News Digest Email
-
+name: Actionsflow
 on:
-  poll:
-    url: https://worldtimeapi.org/api/timezone/Europe/Berlin
-    config:
-      every: "*/5 * * * *"
-      timeZone: Europe/Berlin
-
-jobs:
-  send_digest:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install deps
-        run: |
-          pip install feedparser python-dateutil
-
-      - name: Build digest (English)
-        run: |
-          python scripts/build_digest.py --out digest.md --hours 24 --max-per-section 8
-
-      - name: Send email
-        uses: dawidd6/action-send-mail@v7
-        with:
-          connection_url: ${{ secrets.MAIL_CONNECTION }}
-          to: ${{ secrets.MAIL_TO }}
-          from: ${{ secrets.MAIL_FROM }}
-          subject: Daily News Digest (World/Tech/Economy)
-          html_body: file://digest.md
-          convert_markdown: true
+  schedule:
+    - cron: "*/5 * * * *"
+  push:
+    branches:
+      - main
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      include:
+        description: "--include: workflow file filter, you can use glob format to filter your workflows, the default value is empty value, means no filter will be using"
+        required: false
+        default: ""
+      force:
+        description: "--force: whether force to run workflow, true or false"
+        required: false
+        default: "false"
+      verbose:
+        description: "--verbose: debug workflow, true or false"
+        required: false
+        default: "false"
