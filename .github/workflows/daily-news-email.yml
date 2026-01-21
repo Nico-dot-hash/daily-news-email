@@ -27,8 +27,11 @@ jobs:
         uses: dawidd6/action-send-mail@v7
         with:
           connection_url: ${{ secrets.MAIL_CONNECTION }}
+          secure: true
+          ignore_cert: true
           to: ${{ secrets.MAIL_TO }}
           from: ${{ secrets.MAIL_FROM }}
           subject: Daily News Digest (World/Tech/Economy)
           html_body: file://digest.md
           convert_markdown: true
+
