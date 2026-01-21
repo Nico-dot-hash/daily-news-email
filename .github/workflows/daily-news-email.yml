@@ -18,10 +18,13 @@ jobs:
           python-version: "3.11"
 
       - name: Install deps
-        run: pip install feedparser python-dateutil
+        run: pip install feedparser python-dateutil google-genai
 
       - name: Build digest (English)
-        run: python scripts/build_digest.py --out digest.md --hours 24 --max-per-section 8
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python scripts/build_digest.py --out digest.md --hours 24 --max-per-section 8 --use-gemini
+          
 
       - name: Send email
         uses: dawidd6/action-send-mail@v7
