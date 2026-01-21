@@ -24,7 +24,6 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
-    name: Run
     concurrency: actionsflow
     steps:
       - uses: actions/checkout@v4
