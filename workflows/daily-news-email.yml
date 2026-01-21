@@ -24,6 +24,7 @@ jobs:
         run: python scripts/build_digest.py --out digest.md --hours 24 --max-per-section 8
 
       - name: Send email
+        if: ${{ hashFiles('digest.md') != '' }}
         uses: dawidd6/action-send-mail@v7
         with:
           connection_url: ${{ secrets.MAIL_CONNECTION }}
