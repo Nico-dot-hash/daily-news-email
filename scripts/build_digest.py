@@ -22,6 +22,7 @@ scripts/build_digest.py
 
 import argparse
 import os
+from zoneinfo import ZoneInfo
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from typing import Dict, List, Optional, Tuple
@@ -137,6 +138,13 @@ def main():
     ap.add_argument("--use-gemini", action="store_true", help="generate simple-English key points with Gemini (1 call)")
     ap.add_argument("--gemini-model", default=DEFAULT_GEMINI_MODEL, help="Gemini model name")
     args = ap.parse_args()
+
+    # ---- 只在柏林时间 07:00 执行（全年固定）----
+    berlin_now = datetime.now(ZoneInfo("Europe/Berlin"))
+    if not (berlin_now.hour == 7 and berlin_now.minute == 0):
+        print(f"Skip: Berlin time is {berlin_now.strftime('%H:%M')}, not 07:00.")
+        return
+
 
     now = datetime.now(timezone.utc)
     since = now - timedelta(hours=args.hours)
