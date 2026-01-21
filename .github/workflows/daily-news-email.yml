@@ -23,9 +23,15 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python scripts/build_digest.py --out digest.md --hours 24 --max-per-section 8 --use-gemini
-          
+     
+      - name: Check digest file
+        run: |
+          pwd
+          ls -la
+          test -f digest.md && echo "digest.md exists" || (echo "digest.md missing" && exit 1)
 
       - name: Send email
+        if: ${{ hashFiles('digest.md') != '' }}
         uses: dawidd6/action-send-mail@v7
         with:
           connection_url: ${{ secrets.MAIL_CONNECTION }}
