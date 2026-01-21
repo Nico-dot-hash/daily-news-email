@@ -1,0 +1,34 @@
+name: Daily News Digest Email
+
+on:
+  workflow_dispatch:
+  schedule:
+    # GitHub 的 schedule 只支持 UTC。
+    # 07:00 UTC = 柏林冬令时 08:00；夏令时会变成 09:00。
+    - cron: "0 7 * * *"
+
+jobs:
+  send_digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: pip install feedparser python-dateutil
+
+      - name: Build digest (English)
+        run: python scripts/build_digest.py --out digest.md --hours 24 --max-per-section 8
+
+      - name: Send email
+        uses: dawidd6/action-send-mail@v7
+        with:
+          connection_url: ${{ secrets.MAIL_CONNECTION }}
+          to: ${{ secrets.MAIL_TO }}
+          from: ${{ secrets.MAIL_FROM }}
+          subject: Daily News Digest (World/Tech/Economy)
+          html_body: file://digest.md
+          convert_markdown: true
